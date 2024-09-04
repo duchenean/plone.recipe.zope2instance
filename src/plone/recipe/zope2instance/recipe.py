@@ -798,6 +798,12 @@ class Recipe(Scripts):
             root_handlers = "console, eventlog"
             event_handlers = "eventlog"
 
+        consolelog_handler = options.get("console-log-handler", "StreamHandler")
+        consolelog_level = options.get("console-log-level", "NOTSET")
+        consolelog_kwargs = options.get("console-log-kwargs", "{}")
+        consolelog_args = options.get("console-log-args", "(sys.stderr,)")
+        consolelog_formatter = options.get("console-log-formatter", "generic")
+
         default_accesslog = os.path.sep.join(
             (
                 var_dir,
@@ -888,6 +894,11 @@ class Recipe(Scripts):
             "clear_untrusted_proxy_headers": options.get(
                 "clear-untrusted-proxy-headers", "false"
             ),
+            "consolelog_args": consolelog_args,
+            "consolelog_formatter": consolelog_formatter,
+            "consolelog_handler": consolelog_handler,
+            "consolelog_kwargs": consolelog_kwargs,
+            "consolelog_level": consolelog_level,
             "event_handlers": event_handlers,
             "eventlog_args": eventlog_args,
             "eventlog_handler": eventlog_handler,
@@ -1540,10 +1551,11 @@ qualname = wsgi
 propagate = 0
 
 [handler_console]
-class = StreamHandler
-args = (sys.stderr,)
-level = NOTSET
-formatter = generic
+class = %(consolelog_handler)s
+args = %(consolelog_args)s
+kwargs = %(consolelog_kwargs)s
+level = %(consolelog_level)s
+formatter = %(consolelog_formatter)s
 
 [handler_accesslog]
 class = %(accesslog_handler)s
